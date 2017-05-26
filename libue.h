@@ -30,6 +30,8 @@
 #include <string.h>
 #include <linux/netlink.h>
 #include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #define LIBUE_VERSION_MAJOR "0"
 #define LIBUE_VERSION_MINOR "1.0"
@@ -82,8 +84,8 @@ int ue_parse_event_msg(struct uevent *uevp, size_t buflen) {
     if (memcmp(uevp->buf, "libudev", 8) == 0) return ERR_PARSE_UDEV;
 
     /* validate message header */
-    int body_start = strlen(uevp->buf) + 1;
-    if ((size_t)body_start < sizeof("a@/d")
+    size_t body_start = strlen(uevp->buf) + 1;
+    if (body_start < sizeof("a@/d")
             || body_start >= buflen
             || (strstr(uevp->buf, "@/") == NULL)) {
         return ERR_PARSE_INVALID_HDR;
@@ -140,7 +142,7 @@ int ue_init_listener(struct uevent_listener *l) {
     l->pfd.fd = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_KOBJECT_UEVENT);
     if (l->pfd.fd == -1) return ERR_LISTENER_NOT_ROOT;
 
-    if (bind(l->pfd.fd, (void *)&(l->nls), sizeof(struct sockaddr_nl))) {
+    if (bind(l->pfd.fd, (sockaddr*)&(l->nls), sizeof(struct sockaddr_nl))) {
         return ERR_LISTENER_BIND;
     }
 
@@ -163,3 +165,4 @@ int ue_wait_for_event(struct uevent_listener *l, struct uevent *uevp) {
 }
 
 #endif
+
