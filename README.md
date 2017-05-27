@@ -1,4 +1,4 @@
-libue
+libue [![Build Status](https://circleci.com/gh/houqp/libue.svg?style=shield)](https://circleci.com/gh/houqp/libue)
 =====
 
 Zero dependency minimal library for interacting with Linux hot-plug events.
