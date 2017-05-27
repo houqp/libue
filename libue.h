@@ -122,11 +122,11 @@ int ue_parse_event_msg(struct uevent *uevp, size_t buflen) {
     return 0;
 }
 
-inline void ue_dump_event(struct uevent *uevp) {
+static inline void ue_dump_event(struct uevent *uevp) {
     printf("%s %s\n", uev_action_str[uevp->action], uevp->devpath);
 }
 
-inline void ue_reset_event(struct uevent *uevp) {
+static inline void ue_reset_event(struct uevent *uevp) {
     uevp->action = UEVENT_ACTION_INVALID;
     uevp->buflen = 0;
     uevp->devpath = NULL;
@@ -142,7 +142,7 @@ int ue_init_listener(struct uevent_listener *l) {
     l->pfd.fd = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_KOBJECT_UEVENT);
     if (l->pfd.fd == -1) return ERR_LISTENER_NOT_ROOT;
 
-    if (bind(l->pfd.fd, (sockaddr*)&(l->nls), sizeof(struct sockaddr_nl))) {
+    if (bind(l->pfd.fd, (struct sockaddr*)&(l->nls), sizeof(struct sockaddr_nl))) {
         return ERR_LISTENER_BIND;
     }
 

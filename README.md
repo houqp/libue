@@ -14,25 +14,29 @@ Usage
 -----
 
 ```C
-struct uevent_listener listener;
-struct uevent uev;
-int re;
+#include "libue.h"
 
-re = ue_init_listener(&listener);
-if (re < 0) {
-    fprintf(stderr, "Failed to initilize libue listener, err: %d\n", re);
-    return;
-}
+int main() {
+    struct uevent_listener listener;
+    struct uevent uev;
+    int re;
 
-/* blocking call */
-while ((re = ue_wait_for_event(&listener, &uev)) == 0) {
-    switch (uev.action) {
-    case UEVENT_ACTION_ADD:
-        printf("Device %s added.", uev.devpath);
-        break;
-    case UEVENT_ACTION_REMOVE:
-        printf("Device %s removed.", uev.devpath);
-        break;
+    re = ue_init_listener(&listener);
+    if (re < 0) {
+        fprintf(stderr, "Failed to initilize libue listener, err: %d\n", re);
+        return -1;
+    }
+
+    /* blocking call */
+    while ((re = ue_wait_for_event(&listener, &uev)) == 0) {
+        switch (uev.action) {
+        case UEVENT_ACTION_ADD:
+            printf("Device %s added.", uev.devpath);
+            break;
+        case UEVENT_ACTION_REMOVE:
+            printf("Device %s removed.", uev.devpath);
+            break;
+        }
     }
 }
 ```
